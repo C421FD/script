@@ -16,6 +16,7 @@ class FtpPublisher:
             self.__create_connection(self.__settings__)
             self.__delete_if_exist_in_remote(os.path.basename(os.path.normpath(source_path)))
             self.__upload_directory(source_path, target_path)
+            self.__ftp.quit()
         except Exception as ex:
             self.__log.error(ex)
             raise ex
@@ -31,8 +32,6 @@ class FtpPublisher:
             self.__ftp.login()
 
         self.__log.info("Connected to server.")
-        files_list = self.__ftp.retrlines("LIST")
-        self.__log.info(files_list)
 
     def __upload_directory(self, local_dir, remote_dir):
         for elem in os.listdir(local_dir):
@@ -41,12 +40,13 @@ class FtpPublisher:
                 self.__delete_if_exist_in_remote(elem)
                 file_to_upload = open(os.path.join(local_dir, elem), "rb")
                 self.__ftp.storbinary("STOR %s" % elem, file_to_upload)
+                self.__log.info(str.format("Upload file {} to {}", elem, os.path.join(elem, remote_dir)))
                 file_to_upload.close()
             else:
-                # self.__delete_if_exist_in_remote(elem)
                 sub_folder = os.path.basename(os.path.normpath(elem))
                 if sub_folder not in self.__ftp.nlst():
                     self.__ftp.mkd(sub_folder)
+                    self.__log.info("Created folder %s" % sub_folder)
 
                 self.__upload_directory(os.path.join(local_dir, sub_folder), os.path.join(remote_dir, sub_folder))
 
