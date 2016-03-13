@@ -1,0 +1,6 @@
+#logging
+log-filename: log.log
+log-path: ..\
+
+#msbuild
+assembly_info-source: assembly.info
