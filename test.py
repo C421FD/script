@@ -1,6 +1,4 @@
 from Ftp import *
 
-try:
-    upload_to_ftp(FtpSettings("localhost", 10022), "", "")
-except Exception as e:
-    print(e)
+loader = FtpPublisher(FtpSettings("localhost", 10021))
+loader.upload_to_ftp("C:\\source_path", "\\deploy")
